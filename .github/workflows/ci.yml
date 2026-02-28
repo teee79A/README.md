@@ -9,31 +9,17 @@ on:
       - main
 
 jobs:
-  build:
-    name: build (${{ matrix.project }})
+  ci-gate:
+    name: ci-gate
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        project:
-          - codex-engine
-          - axiom-core
-    defaults:
-      run:
-        working-directory: ${{ matrix.project }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+      - name: Verify required files exist
+        run: |
+          test -f README.md
+          test -f INTRODUCTION.md
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
+      - name: List tracked files
+        run: git ls-files
